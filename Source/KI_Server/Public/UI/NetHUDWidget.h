@@ -20,7 +20,7 @@ protected:
 	void UpdateTime();
 
 public:
-	void UpdatePoint();
+	void UpdatePoint(int32 Point, bool bIsLocal);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget));

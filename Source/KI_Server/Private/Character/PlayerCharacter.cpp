@@ -18,21 +18,4 @@ void APlayerCharacter::BeginPlay()
 	
 }
 
-void APlayerCharacter::Update_Score(int32 Score)
-{
-	if (HasAuthority())
-	{
-		
-	}
-	else
-	{
-		Server_Update_Score(Score);
-	}
-}
-
-void APlayerCharacter::Server_Update_Score_Implementation(int32 Score)
-{
-
-}
-
 

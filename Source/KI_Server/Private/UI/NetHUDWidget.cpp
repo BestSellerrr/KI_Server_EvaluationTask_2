@@ -20,16 +20,27 @@ void UNetHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UNetHUDWidget::UpdateTime()
 {
+	if (!GameTimer)
+		return;
+
 	int32 Time = FMath::FloorToInt(CachedNetGameState->GetGameplayTime());
-	float Minutes = Time / 60;
-	float Seconds = Time % 60;
+	int32 Minutes = Time / 60;
+	int32 Seconds = Time % 60;
 
 	GameTimer->SetText(FText::FromString(FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds)));
-
-
 }
 
-void UNetHUDWidget::UpdatePoint()
+void UNetHUDWidget::UpdatePoint(int32 Point, bool bIsLocal)
 {
+	if (!PlayerPoint || !EnemyPoint)
+		return;
 
+	if (bIsLocal)
+	{
+		PlayerPoint->SetText(FText::FromString(FString::Printf(TEXT("Player : %d"), Point)));
+	}
+	else
+	{
+		EnemyPoint->SetText(FText::FromString(FString::Printf(TEXT("Enemy : %d"), Point)));
+	}
 }

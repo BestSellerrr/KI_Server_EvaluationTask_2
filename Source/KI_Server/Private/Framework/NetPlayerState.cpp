@@ -2,11 +2,15 @@
 
 
 #include "Framework/NetPlayerState.h"
+#include "Framework/NetHUD.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/NetHUDWidget.h"
 
 void ANetPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
 	DOREPLIFETIME(ANetPlayerState, Point);
 }
 
@@ -14,13 +18,33 @@ void ANetPlayerState::OnRep_Point()
 {
 	if (!NetHUDWidget.IsValid())
 	{
-		if (!GetPlayerController())
+		APlayerController* LocalPC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (!LocalPC)
 			return;
-		// HUD 생성 후 HUD확인, HUD의 위젯 확인, 
+		ANetHUD* HUD = LocalPC->GetHUD<ANetHUD>();
+		if (!HUD || !(HUD->GetNetHUDWidget().IsValid()))
+			return;
+		NetHUDWidget = Cast<UNetHUDWidget>(HUD->GetNetHUDWidget().Get());
 	}
 
 	if (NetHUDWidget.IsValid())
 	{
-		NetHUDWidget->UpdatePoint();	// NetHUDWidget에 구현 필요
+		bool bIsLocalPlayer = false;
+		APlayerController* LocalPC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (LocalPC->PlayerState == this)
+		{
+			bIsLocalPlayer = true;
+		}
+
+		NetHUDWidget->UpdatePoint(Point, bIsLocalPlayer);
+	}
+}
+
+void ANetPlayerState::AddPoint()
+{
+	if (HasAuthority())
+	{
+		Point++;
+		OnRep_Point();
 	}
 }

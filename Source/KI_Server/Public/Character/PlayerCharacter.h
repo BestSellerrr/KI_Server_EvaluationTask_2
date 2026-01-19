@@ -17,10 +17,4 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UFUNCTION()
-	void Update_Score(int32 Score);
-
-	UFUNCTION(Server, Reliable)
-	void Server_Update_Score(int32 Score);
-
 };

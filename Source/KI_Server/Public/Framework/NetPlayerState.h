@@ -20,6 +20,9 @@ protected:
 	UFUNCTION()
 	void OnRep_Point();
 
+public:
+	void AddPoint();
+
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_Point)
 	int32 Point = 0;

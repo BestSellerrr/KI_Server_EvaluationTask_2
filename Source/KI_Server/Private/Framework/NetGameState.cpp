@@ -6,7 +6,12 @@
 
 ANetGameState::ANetGameState()
 {
+	PrimaryActorTick.bCanEverTick = true;
+}
 
+void ANetGameState::BeginPlay()
+{
+	GamePlayTime = 60.0f;
 }
 
 void ANetGameState::Tick(float DeltaTime)
@@ -15,14 +20,14 @@ void ANetGameState::Tick(float DeltaTime)
 
 	if (HasAuthority())
 	{
-		if (GamePlayTime >= 0.0f && !IsFinish)
+		if (GamePlayTime >= 0.0f && !bFinish)
 		{
 			GamePlayTime -= DeltaTime;	
-			IsFinish = true;
 		}
 		else
 		{
 			GamePlayTime = 0.0f;
+			bFinish = true;
 		}
 	}
 }
@@ -32,4 +37,5 @@ void ANetGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ANetGameState, GamePlayTime);
+	DOREPLIFETIME(ANetGameState, bFinish);
 }

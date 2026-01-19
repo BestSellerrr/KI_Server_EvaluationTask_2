@@ -16,18 +16,18 @@ class KI_SERVER_API ANetGameState : public AGameStateBase
 	
 public:
 	ANetGameState();
-
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 	inline float GetGameplayTime() { return GamePlayTime; }
+	inline bool GetbFinish() { return bFinish; }
 
 protected:
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
 	float GamePlayTime = 60.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Game|Data")
-	bool IsFinish = false;
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	bool bFinish = false;
 };
