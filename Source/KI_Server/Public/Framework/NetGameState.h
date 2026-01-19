@@ -6,6 +6,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "NetGameState.generated.h"
 
+DECLARE_DELEGATE(FOnGameOver);
 /**
  * 
  */
@@ -23,10 +24,12 @@ public:
 	inline float GetGameplayTime() { return GamePlayTime; }
 	inline bool GetbFinish() { return bFinish; }
 
+	FOnGameOver OnGameOver;
+
 protected:
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
-	float GamePlayTime = 60.0f;
+	float GamePlayTime = 0.0f;
 
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Game|Data")
 	bool bFinish = false;

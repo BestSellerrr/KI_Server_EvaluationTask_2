@@ -2,6 +2,7 @@
 
 
 #include "Actor/NetPointActorSpawner.h"
+#include "Framework/NetGameState.h"
 
 // Sets default values
 ANetPointActorSpawner::ANetPointActorSpawner()
@@ -21,21 +22,23 @@ void ANetPointActorSpawner::BeginPlay()
 	UWorld* World = GetWorld();
 	if (!World)
 		return;
+	if (!CachedGameState.IsValid())
+	{
+		CachedGameState = Cast<ANetGameState>(World->GetGameState());
+	}
 
 	TimerDelegate.BindUObject(this, &ANetPointActorSpawner::RandomSpawn);
 	World->GetTimerManager().SetTimer(
 		SpawnActorTimer,
 		TimerDelegate,
 		3.0f,
-		true
+		true,
+		0.0f
 	);
-
-	// 스폰액터 만들고 난 후 테스트 안함(확인 필요)
 }
 
 void ANetPointActorSpawner::RandomSpawn()
 {
-	UE_LOG(LogTemp, Log, TEXT("ActorSpawn"));
 	UWorld* World = GetWorld();
 	if (!World)
 		return;
@@ -44,7 +47,7 @@ void ANetPointActorSpawner::RandomSpawn()
 
 	float X = FMath::FRandRange(-SpawnRange, SpawnRange);
 	float Y = FMath::FRandRange(-SpawnRange, SpawnRange);
-	FVector RandomVector = FVector(X, Y, 0);
+	FVector RandomVector = GetActorLocation() + FVector(X, Y, 0);
 
 	FActorSpawnParameters Params;
 	Params.Owner = this;
@@ -55,6 +58,12 @@ void ANetPointActorSpawner::RandomSpawn()
 		GetActorRotation(),
 		Params
 	);
+
+	if (CachedGameState->GetbFinish())
+	{
+		World->GetTimerManager().ClearTimer(SpawnActorTimer);
+		return;
+	}
 
 	return;
 }

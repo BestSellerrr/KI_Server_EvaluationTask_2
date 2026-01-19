@@ -6,6 +6,21 @@
 #include "Framework/NetGameState.h"
 #include "Components/TextBlock.h"
 
+void UNetHUDWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (WinTextBlock)
+	{
+		WinTextBlock->SetVisibility(ESlateVisibility::Hidden);
+	}
+	if (LoseTextBlock)
+	{
+		LoseTextBlock->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+}
+
 void UNetHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
@@ -13,8 +28,12 @@ void UNetHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	if (!CachedNetGameState.IsValid())
 	{
 		CachedNetGameState = Cast<ANetGameState>(UGameplayStatics::GetGameState(this));
+		if (CachedNetGameState.IsValid())
+		{
+			CachedNetGameState->OnGameOver.BindUObject(this, &UNetHUDWidget::UpdateGameOverDisplay);
+		}
 	}
-
+	
 	UpdateTime();
 }
 
@@ -37,10 +56,41 @@ void UNetHUDWidget::UpdatePoint(int32 Point, bool bIsLocal)
 
 	if (bIsLocal)
 	{
+		CachedPlayerPoint = Point;
 		PlayerPoint->SetText(FText::FromString(FString::Printf(TEXT("Player : %d"), Point)));
 	}
 	else
 	{
+		CachedEnemyPoint = Point;
 		EnemyPoint->SetText(FText::FromString(FString::Printf(TEXT("Enemy : %d"), Point)));
 	}
+}
+
+void UNetHUDWidget::UpdateGameOverDisplay()
+{
+	UE_LOG(LogTemp, Log, TEXT("GameOver"));
+
+	if (!CachedNetGameState.IsValid())
+		return;
+	if (!WinTextBlock || !LoseTextBlock)
+		return;
+	
+	if (CachedPlayerPoint > CachedEnemyPoint)
+	{
+		WinTextBlock->SetVisibility(ESlateVisibility::Visible);
+		LoseTextBlock->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else if (CachedPlayerPoint < CachedEnemyPoint)
+	{
+		LoseTextBlock->SetVisibility(ESlateVisibility::Visible);
+		WinTextBlock->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		WinTextBlock->SetText(FText::FromString(TEXT("Draw")));
+		WinTextBlock->SetVisibility(ESlateVisibility::Visible);
+		LoseTextBlock->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	CachedNetGameState->OnGameOver.Unbind();
 }

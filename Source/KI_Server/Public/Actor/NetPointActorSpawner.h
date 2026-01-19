@@ -28,4 +28,6 @@ protected:
 private:
 	FTimerHandle SpawnActorTimer;
 	FTimerDelegate TimerDelegate;
+
+	TWeakObjectPtr<class ANetGameState> CachedGameState = nullptr;
 };

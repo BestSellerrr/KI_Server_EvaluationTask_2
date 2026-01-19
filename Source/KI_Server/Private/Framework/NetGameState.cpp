@@ -11,7 +11,9 @@ ANetGameState::ANetGameState()
 
 void ANetGameState::BeginPlay()
 {
-	GamePlayTime = 60.0f;
+	Super::BeginPlay();
+
+	bFinish = false;
 }
 
 void ANetGameState::Tick(float DeltaTime)
@@ -20,7 +22,7 @@ void ANetGameState::Tick(float DeltaTime)
 
 	if (HasAuthority())
 	{
-		if (GamePlayTime >= 0.0f && !bFinish)
+		if (GamePlayTime > 0.0f)
 		{
 			GamePlayTime -= DeltaTime;	
 		}
@@ -28,6 +30,7 @@ void ANetGameState::Tick(float DeltaTime)
 		{
 			GamePlayTime = 0.0f;
 			bFinish = true;
+			OnGameOver.ExecuteIfBound();
 		}
 	}
 }
