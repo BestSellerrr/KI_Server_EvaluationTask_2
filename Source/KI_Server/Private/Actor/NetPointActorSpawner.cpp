@@ -35,6 +35,7 @@ void ANetPointActorSpawner::BeginPlay()
 
 void ANetPointActorSpawner::RandomSpawn()
 {
+	UE_LOG(LogTemp, Log, TEXT("ActorSpawn"));
 	UWorld* World = GetWorld();
 	if (!World)
 		return;
