@@ -14,7 +14,6 @@ void ANetGameState::BeginPlay()
 	Super::BeginPlay();
 
 	bFinish = false;
-	
 }
 
 void ANetGameState::Tick(float DeltaTime)
