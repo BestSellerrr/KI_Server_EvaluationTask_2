@@ -14,7 +14,10 @@ void ANetGameState::BeginPlay()
 	Super::BeginPlay();
 
 	bFinish = false;
-	
+	if (bFinish)
+	{
+		OnGameOver.ExecuteIfBound();
+	}
 }
 
 void ANetGameState::Tick(float DeltaTime)
@@ -33,10 +36,7 @@ void ANetGameState::Tick(float DeltaTime)
 			bFinish = true;
 		}
 	}
-	if (bFinish)
-	{
-		OnGameOver.ExecuteIfBound();
-	}
+
 	
 }
 
